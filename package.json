@@ -11,8 +11,10 @@
   },
   "keywords": [
     "game",
-    "tetris",
-    "typescript"
+    "tictactoe",
+    "typescript",
+    "ninja",
+    "pixijs"
   ],
   "author": "Juan Lucha",
   "devDependencies": {
@@ -33,6 +35,7 @@
     "webpack-dev-server": "3.1.11"
   },
   "dependencies": {
+    "@types/pixi.js": "^4.8.6",
     "pixi.js": "^4.8.5",
     "standard": "^12.0.1"
   }
