@@ -1,12 +1,12 @@
 export class Enemy {
   public id: number
-  public playerNumber: number
+  public playerId: number
   public sprite: PIXI.Sprite
   public texture: PIXI.Texture
 
-  constructor(texture: PIXI.Texture, playerNumber: number, id: number) {
+  constructor(texture: PIXI.Texture, playerId: number, id: number) {
     this.id = id
-    this.playerNumber = playerNumber
+    this.playerId = playerId
     this.texture = texture
     this.sprite = new PIXI.Sprite(this.texture)
     this.sprite.name = this.id.toString()

@@ -2,13 +2,13 @@ import * as PIXI from 'pixi.js'
 import { Weapon } from './weapon'
 
 export class Ninja {
-  public playerNumber: number
+  public playerId: number
   public score: number
   public weapon: Weapon
 
-  constructor(weaponTexture: PIXI.Texture, playerNumber: number) {
-    this.playerNumber = playerNumber
+  constructor(weaponTexture: PIXI.Texture, playerId: number) {
+    this.playerId = playerId
     this.score = 0
-    this.weapon = new Weapon(weaponTexture, playerNumber)
+    this.weapon = new Weapon(weaponTexture, playerId)
   }
 }

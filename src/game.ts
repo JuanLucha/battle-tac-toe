@@ -11,8 +11,9 @@ const shuriken2Image: string = 'images/shuriken-2.png'
 const weaponRotationAmount: number = 0.1
 
 export class Game {
+  public actualNinja: Ninja
+
   private app: PIXI.Application
-  private actualNinja: Ninja
   private actualWeapon: Weapon
   private board: Board
   private ninja1: Ninja
@@ -26,6 +27,14 @@ export class Game {
     this.app.ticker.add(delta => this.gameLoop(delta))
   }
 
+  public switchActualNinja(): void {
+    if (this.actualNinja.playerId === ninjaID1) {
+      this.actualNinja = this.ninja2
+    } else {
+      this.actualNinja = this.ninja1
+    }
+  }
+
   private createAppEngine(): void {
     let height: number = window.innerHeight
     let width: number = window.innerWidth
@@ -35,7 +44,8 @@ export class Game {
   }
 
   private gameLoop(delta: any): void {
-    this.rotateStar()
+    if (this.actualWeapon) this.rotateStar()
+
   }
 
   private loadResources(): void {
@@ -47,18 +57,18 @@ export class Game {
   }
 
   private rotateStar(): void {
-    if (this.actualWeapon)
     this.actualWeapon.rotate(weaponRotationAmount)
   }
 
   private setupBoard(): void {
-    this.board = new Board(PIXI.utils.TextureCache[enemyImage], this.app.screen.height, this.app.screen.width)
+    this.board = new Board(PIXI.utils.TextureCache[enemyImage], this.app.screen.height, this.app.screen.width, this)
     this.app.stage.addChild(this.board.enemiesContainer)
   }
 
   private setupNinjas(): void {
     this.ninja1 = new Ninja(PIXI.utils.TextureCache[shuriken1Image], ninjaID1)
     this.ninja2 = new Ninja(PIXI.utils.TextureCache[shuriken2Image], ninjaID2)
+    this.actualNinja = this.ninja1
   }
 
   private startGameEngine(): void {
