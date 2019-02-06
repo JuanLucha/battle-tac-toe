@@ -1,11 +1,13 @@
 import * as PIXI from 'pixi.js'
 
 export class Weapon {
+  public playerNumber: number
   public rotation: number = 0
   public sprite: PIXI.Sprite
   public texture: PIXI.Texture
 
-  constructor(texture: PIXI.Texture, rotation: number = 0) {
+  constructor(texture: PIXI.Texture, playerNumber: number, rotation: number = 0) {
+    this.playerNumber = playerNumber
     this.rotation = rotation
     this.texture = texture
     this.sprite = new PIXI.Sprite(this.texture)
@@ -14,7 +16,7 @@ export class Weapon {
   }
 
   public clone(): Weapon {
-    return new Weapon(this.texture.clone(), this.rotation)
+    return new Weapon(this.texture.clone(), this.playerNumber, this.rotation)
   }
 
   public rotate(rotationAmount: number): void {

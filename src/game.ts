@@ -1,16 +1,20 @@
+import { Board } from './board'
 import { Weapon } from './weapon'
 import * as PIXI from 'pixi.js'
 import { Ninja } from './ninja'
 
-const gameLoopInterval: number = 10
+const enemyImage: string = 'images/ninja.png'
+const ninjaID1: number = 1
+const ninjaID2: number = 2
 const shuriken1Image: string = 'images/shuriken-1.png'
 const shuriken2Image: string = 'images/shuriken-2.png'
 const weaponRotationAmount: number = 0.1
 
 export class Game {
   private app: PIXI.Application
+  private actualNinja: Ninja
   private actualWeapon: Weapon
-  private gameLoop: number
+  private board: Board
   private ninja1: Ninja
   private ninja2: Ninja
 
@@ -19,7 +23,7 @@ export class Game {
   public start(): void {
     this.createAppEngine()
     this.loadResources()
-    this.gameLoop = window.setInterval(this.gameIteration.bind(this), gameLoopInterval)
+    this.app.ticker.add(delta => this.gameLoop(delta))
   }
 
   private createAppEngine(): void {
@@ -30,7 +34,7 @@ export class Game {
     document.body.appendChild(this.app.view)
   }
 
-  private gameIteration(): void {
+  private gameLoop(delta: any): void {
     this.rotateStar()
   }
 
@@ -38,6 +42,7 @@ export class Game {
     this.app.loader
       .add(shuriken1Image)
       .add(shuriken2Image)
+      .add(enemyImage)
       .load(this.startGameEngine.bind(this))
   }
 
@@ -46,16 +51,22 @@ export class Game {
     this.actualWeapon.rotate(weaponRotationAmount)
   }
 
+  private setupBoard(): void {
+    this.board = new Board(PIXI.utils.TextureCache[enemyImage], this.app.screen.height, this.app.screen.width)
+    this.app.stage.addChild(this.board.enemiesContainer)
+  }
+
   private setupNinjas(): void {
-    this.ninja1 = new Ninja(PIXI.utils.TextureCache['images/shuriken-1.png'])
-    this.ninja2 = new Ninja(PIXI.utils.TextureCache['images/shuriken-2.png'])
+    this.ninja1 = new Ninja(PIXI.utils.TextureCache[shuriken1Image], ninjaID1)
+    this.ninja2 = new Ninja(PIXI.utils.TextureCache[shuriken2Image], ninjaID2)
   }
 
   private startGameEngine(): void {
     this.setupNinjas()
+    this.setupBoard()
 
-    this.actualWeapon = this.ninja1.weapon.clone()
+    // this.actualWeapon = this.ninja1.weapon.clone()
     // this.actualWeapon.rotate(weaponRotationAmount)
-    this.app.stage.addChild(this.actualWeapon.sprite)
+    // this.app.stage.addChild(this.actualWeapon.sprite)
   }
 }
