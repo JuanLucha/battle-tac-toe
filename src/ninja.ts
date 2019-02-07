@@ -1,3 +1,4 @@
+import { Enemy } from './enemy'
 import * as PIXI from 'pixi.js'
 import { Weapon } from './weapon'
 
@@ -10,5 +11,10 @@ export class Ninja {
     this.playerId = playerId
     this.score = 0
     this.weapon = new Weapon(weaponTexture, playerId)
+  }
+
+  public attack(startPositionX: number, startPositionY: number, enemy: Enemy, afterAnimationCallback: Function): void {
+    this.weapon.target = enemy
+    this.weapon.resetPosition(startPositionX, startPositionY)
   }
 }

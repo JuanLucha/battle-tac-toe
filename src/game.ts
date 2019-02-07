@@ -8,13 +8,13 @@ const ninjaID1: number = 1
 const ninjaID2: number = 2
 const shuriken1Image: string = 'images/shuriken-1.png'
 const shuriken2Image: string = 'images/shuriken-2.png'
-const weaponRotationAmount: number = 0.1
+const weaponRotationAmount: number = 0.3
 
 export class Game {
   public actualNinja: Ninja
+  public actualWeapon: Weapon
+  public app: PIXI.Application
 
-  private app: PIXI.Application
-  private actualWeapon: Weapon
   private board: Board
   private ninja1: Ninja
   private ninja2: Ninja
@@ -44,7 +44,10 @@ export class Game {
   }
 
   private gameLoop(delta: any): void {
-    if (this.actualWeapon) this.rotateStar()
+    if (this.actualWeapon) {
+      this.actualWeapon.rotate(weaponRotationAmount)
+      this.actualWeapon.moveToTarget()
+    }
 
   }
 
@@ -54,10 +57,6 @@ export class Game {
       .add(shuriken2Image)
       .add(enemyImage)
       .load(this.startGameEngine.bind(this))
-  }
-
-  private rotateStar(): void {
-    this.actualWeapon.rotate(weaponRotationAmount)
   }
 
   private setupBoard(): void {

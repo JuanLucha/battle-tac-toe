@@ -52,8 +52,13 @@ export class Board {
         newEnemy.sprite.height = enemyHeight
         newEnemy.sprite.width = enemyWidth
         newEnemy.sprite.on('click', () => {
+          console.log(newEnemy)
           console.log(this.parentGame.actualNinja.playerId)
-          this.parentGame.switchActualNinja()
+          this.parentGame.actualWeapon = this.parentGame.actualNinja.weapon
+          this.parentGame.app.stage.addChild(this.parentGame.actualWeapon.sprite)
+          this.parentGame.actualNinja.attack(this.parentGame.app.screen.width / 2, this.parentGame.app.screen.height, newEnemy, () => {
+            this.parentGame.switchActualNinja()
+          })
         })
         this.boardValues[y].push(newEnemy)
         this.enemiesContainer.addChild(this.boardValues[y][x].sprite)
