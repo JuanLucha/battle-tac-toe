@@ -25,22 +25,27 @@ export class Weapon {
   }
 
   public moveToTarget(): void {
-    console.log(this.targetIsUp(), )
-    if (this.targetIsRight()) {
-      this.sprite.x += stepSize
-    } else if (this.targetIsLeft()) {
-      this.sprite.x -= stepSize
-    }
-    if (this.targetIsUp()) {
-      this.sprite.y -= stepSize
-    } else if (this.targetIsDown()) {
-      this.sprite.y += stepSize
+    if (this.sprite.scale.x > 0.1) {
+      this.sprite.scale.x -= 0.1
+      this.sprite.scale.y -= 0.1
+
+      if (this.targetIsRight()) {
+        this.sprite.x += stepSize
+      } else if (this.targetIsLeft()) {
+        this.sprite.x -= stepSize
+      }
+      if (this.targetIsUp()) {
+        this.sprite.y -= stepSize
+      } else if (this.targetIsDown()) {
+        this.sprite.y += stepSize
+      }
     }
   }
 
-  public resetPosition(x: number, y: number): void {
+  public resetState(x: number, y: number): void {
+    this.sprite.scale.set(3, 3)
     this.sprite.x = x
-    this.sprite.y = y
+    this.sprite.y = y + this.sprite.height / 8
   }
 
   public rotate(rotationAmount: number): void {

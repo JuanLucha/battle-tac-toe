@@ -15,6 +15,6 @@ export class Ninja {
 
   public attack(startPositionX: number, startPositionY: number, enemy: Enemy, afterAnimationCallback: Function): void {
     this.weapon.target = enemy
-    this.weapon.resetPosition(startPositionX, startPositionY)
+    this.weapon.resetState(startPositionX, startPositionY)
   }
 }
