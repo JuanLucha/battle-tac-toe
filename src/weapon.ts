@@ -1,9 +1,11 @@
+import { Subject } from 'rxjs'
 import { Enemy } from './enemy'
 import * as PIXI from 'pixi.js'
 
 const stepSize: number = 30
 
 export class Weapon {
+  public onEnemyHit: Subject<boolean> = new Subject()
   public playerId: number
   public rotation: number = 0
   public sprite: PIXI.Sprite
@@ -39,6 +41,8 @@ export class Weapon {
       } else if (this.targetIsDown()) {
         this.sprite.y += stepSize
       }
+    } else {
+      this.onEnemyHit.next(true)
     }
   }
 

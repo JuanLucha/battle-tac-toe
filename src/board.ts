@@ -2,6 +2,7 @@ import { Game } from './game'
 import { Ninja } from './ninja'
 import { Enemy } from './enemy'
 import * as PIXI from 'pixi.js'
+import { Subject } from 'rxjs'
 
 const aliveState: number = 0
 const boardHeight: number = 3
@@ -13,10 +14,15 @@ export class Board {
   public boardValues: Enemy[][] = []
   public enemiesContainer: PIXI.Container
   public parentGame: Game
+  public enemyClicked: Subject<Enemy> = new Subject()
 
   constructor(texture: PIXI.Texture, screenHeight: number, screenWidth: number, parentGame: Game) {
     this.parentGame = parentGame
     this.initBoard(texture, screenHeight, screenWidth)
+  }
+
+  public detectNinjaWinner(ninja: Ninja): boolean {
+    return this.detectRows(ninja) || this.detectColumns(ninja) || this.detectDiagonals(ninja)
   }
 
   public markTile(x: number, y: number, playerId: number): void {
@@ -31,6 +37,33 @@ export class Board {
         this.boardValues[y][x].playerId = aliveState
       }
     }
+  }
+
+  private detectColumns(ninja: Ninja): boolean {
+    let sprites: PIXI.Sprite[] = this.enemiesContainer.children as PIXI.Sprite[]
+    return (
+      (sprites[0].tint === ninja.playerColor && sprites[3].tint === ninja.playerColor && sprites[6].tint === ninja.playerColor) ||
+      (sprites[1].tint === ninja.playerColor && sprites[4].tint === ninja.playerColor && sprites[7].tint === ninja.playerColor) ||
+      (sprites[2].tint === ninja.playerColor && sprites[5].tint === ninja.playerColor && sprites[8].tint === ninja.playerColor)
+    )
+  }
+
+  private detectRows(ninja: Ninja): boolean {
+    let sprites: PIXI.Sprite[] = this.enemiesContainer.children as PIXI.Sprite[]
+      console.log(sprites[0].tint, sprites[1].tint, sprites[2].tint, ninja.playerColor)
+    return (
+      (sprites[0].tint === ninja.playerColor && sprites[1].tint === ninja.playerColor && sprites[2].tint === ninja.playerColor) ||
+      (sprites[3].tint === ninja.playerColor && sprites[4].tint === ninja.playerColor && sprites[5].tint === ninja.playerColor) ||
+      (sprites[6].tint === ninja.playerColor && sprites[7].tint === ninja.playerColor && sprites[8].tint === ninja.playerColor)
+    )
+  }
+
+  private detectDiagonals(ninja: Ninja): boolean {
+    let sprites: PIXI.Sprite[] = this.enemiesContainer.children as PIXI.Sprite[]
+    return (
+      (sprites[0].tint === ninja.playerColor && sprites[4].tint === ninja.playerColor && sprites[8].tint === ninja.playerColor) ||
+      (sprites[6].tint === ninja.playerColor && sprites[4].tint === ninja.playerColor && sprites[2].tint === ninja.playerColor)
+    )
   }
 
   private initBoard(texture: PIXI.Texture, screenHeight: number, screenWidth: number): void {
@@ -52,13 +85,7 @@ export class Board {
         newEnemy.sprite.height = enemyHeight
         newEnemy.sprite.width = enemyWidth
         newEnemy.sprite.on('click', () => {
-          console.log(newEnemy)
-          console.log(this.parentGame.actualNinja.playerId)
-          this.parentGame.actualWeapon = this.parentGame.actualNinja.weapon
-          this.parentGame.app.stage.addChild(this.parentGame.actualWeapon.sprite)
-          this.parentGame.actualNinja.attack(this.parentGame.app.screen.width / 2, this.parentGame.app.screen.height, newEnemy, () => {
-            this.parentGame.switchActualNinja()
-          })
+          this.enemyClicked.next(newEnemy)
         })
         this.boardValues[y].push(newEnemy)
         this.enemiesContainer.addChild(this.boardValues[y][x].sprite)

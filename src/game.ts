@@ -1,11 +1,15 @@
-import { Board } from './board'
-import { Weapon } from './weapon'
 import * as PIXI from 'pixi.js'
+import { Subscription } from 'rxjs'
+import { Board } from './board'
+import { Enemy } from './enemy'
 import { Ninja } from './ninja'
+import { Weapon } from './weapon'
 
 const enemyImage: string = 'images/ninja.png'
 const ninjaID1: number = 1
 const ninjaID2: number = 2
+const ninjaColor1: number = 0xff0000
+const ninjaColor2: number = 0x0000ff
 const shuriken1Image: string = 'images/shuriken-1.png'
 const shuriken2Image: string = 'images/shuriken-2.png'
 const weaponRotationAmount: number = 0.3
@@ -18,6 +22,8 @@ export class Game {
   private board: Board
   private ninja1: Ninja
   private ninja2: Ninja
+  private enemyClickedSubscription: Subscription
+  private weaponHitSubscription: Subscription
 
   constructor() { }
 
@@ -33,6 +39,7 @@ export class Game {
     } else {
       this.actualNinja = this.ninja1
     }
+    console.log(this.actualNinja.playerId)
   }
 
   private createAppEngine(): void {
@@ -44,11 +51,10 @@ export class Game {
   }
 
   private gameLoop(delta: any): void {
-    if (this.actualWeapon) {
+    if (this.actualWeapon && this.actualWeapon.target) {
       this.actualWeapon.rotate(weaponRotationAmount)
       this.actualWeapon.moveToTarget()
     }
-
   }
 
   private loadResources(): void {
@@ -59,20 +65,40 @@ export class Game {
       .load(this.startGameEngine.bind(this))
   }
 
+  private setSubscriptions(): void {
+    this.enemyClickedSubscription = this.board.enemyClicked.subscribe((enemy: Enemy) => {
+      this.actualWeapon = this.actualNinja.weapon.clone()
+      if (this.weaponHitSubscription) this.weaponHitSubscription.unsubscribe()
+      this.weaponHitSubscription = this.actualWeapon.onEnemyHit.subscribe(() => {
+        enemy.setColor(this.actualNinja.playerColor)
+        this.actualWeapon.target = null
+        if (this.board.detectNinjaWinner(this.actualNinja)) {
+          console.log("gameOver")
+          // this.showGameOver()
+        } else {
+          this.switchActualNinja()
+        }
+      })
+      this.app.stage.addChild(this.actualWeapon.sprite)
+      this.actualNinja.attack(this.app.screen.width / 2, this.app.screen.height, enemy, this.actualWeapon)
+    })
+  }
+
   private setupBoard(): void {
     this.board = new Board(PIXI.utils.TextureCache[enemyImage], this.app.screen.height, this.app.screen.width, this)
     this.app.stage.addChild(this.board.enemiesContainer)
   }
 
   private setupNinjas(): void {
-    this.ninja1 = new Ninja(PIXI.utils.TextureCache[shuriken1Image], ninjaID1)
-    this.ninja2 = new Ninja(PIXI.utils.TextureCache[shuriken2Image], ninjaID2)
+    this.ninja1 = new Ninja(PIXI.utils.TextureCache[shuriken1Image], ninjaID1, ninjaColor1)
+    this.ninja2 = new Ninja(PIXI.utils.TextureCache[shuriken2Image], ninjaID2, ninjaColor2)
     this.actualNinja = this.ninja1
   }
 
   private startGameEngine(): void {
     this.setupNinjas()
     this.setupBoard()
+    this.setSubscriptions()
 
     // this.actualWeapon = this.ninja1.weapon.clone()
     // this.actualWeapon.rotate(weaponRotationAmount)

@@ -11,4 +11,8 @@ export class Enemy {
     this.sprite = new PIXI.Sprite(this.texture)
     this.sprite.name = this.id.toString()
   }
+
+  public setColor(newColor: number): void {
+    this.sprite.tint = newColor
+  }
 }
