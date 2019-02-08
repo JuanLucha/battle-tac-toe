@@ -13,12 +13,23 @@ const enemiesContainerWidth: number = 600
 export class Board {
   public boardValues: Enemy[][] = []
   public enemiesContainer: PIXI.Container
-  public parentGame: Game
   public enemyClicked: Subject<Enemy> = new Subject()
 
-  constructor(texture: PIXI.Texture, screenHeight: number, screenWidth: number, parentGame: Game) {
-    this.parentGame = parentGame
-    this.initBoard(texture, screenHeight, screenWidth)
+  private demonTexture: PIXI.Texture
+  private dragonTexture: PIXI.Texture
+  private monkTexture: PIXI.Texture
+
+  constructor(
+    demonTexture: PIXI.Texture,
+    dragonTexture: PIXI.Texture,
+    monkTexture: PIXI.Texture,
+    screenHeight: number,
+    screenWidth: number
+  ) {
+    this.demonTexture = demonTexture
+    this.dragonTexture = dragonTexture
+    this.monkTexture = monkTexture
+    this.initBoard(screenHeight, screenWidth)
   }
 
   public detectNinjaWinner(ninja: Ninja): boolean {
@@ -50,7 +61,7 @@ export class Board {
 
   private detectRows(ninja: Ninja): boolean {
     let sprites: PIXI.Sprite[] = this.enemiesContainer.children as PIXI.Sprite[]
-      console.log(sprites[0].tint, sprites[1].tint, sprites[2].tint, ninja.playerColor)
+    console.log(sprites[0].tint, sprites[1].tint, sprites[2].tint, ninja.playerColor)
     return (
       (sprites[0].tint === ninja.playerColor && sprites[1].tint === ninja.playerColor && sprites[2].tint === ninja.playerColor) ||
       (sprites[3].tint === ninja.playerColor && sprites[4].tint === ninja.playerColor && sprites[5].tint === ninja.playerColor) ||
@@ -66,7 +77,19 @@ export class Board {
     )
   }
 
-  private initBoard(texture: PIXI.Texture, screenHeight: number, screenWidth: number): void {
+  private getEnemyTexture(enemyId: number): PIXI.Texture {
+    if ([0, 2, 6, 8].includes(enemyId)) {
+      return this.demonTexture
+    }
+    if ([1, 3, 5, 7].includes(enemyId)) {
+      return this.monkTexture
+    }
+    if (enemyId === 4) {
+      return this.dragonTexture
+    }
+  }
+
+  private initBoard(screenHeight: number, screenWidth: number): void {
     this.enemiesContainer = new PIXI.Container()
     this.enemiesContainer.x = (screenWidth - enemiesContainerWidth) / 2
     this.enemiesContainer.y = (screenHeight - enemiesContainerHeight) / 2
@@ -78,7 +101,7 @@ export class Board {
     for (let y = 0; y < boardHeight; y++) {
       this.boardValues.push([])
       for (let x = 0; x < boardWidth; x++) {
-        let newEnemy: Enemy = new Enemy(texture, aliveState, enemyId)
+        let newEnemy: Enemy = new Enemy(this.getEnemyTexture(enemyId), aliveState, enemyId)
         newEnemy.sprite.buttonMode = true
         newEnemy.sprite.interactive = true
         newEnemy.sprite.position.set(x * enemiesContainerWidth / boardWidth, y * enemiesContainerHeight / boardHeight)

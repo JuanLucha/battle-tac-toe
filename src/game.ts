@@ -5,13 +5,14 @@ import { Enemy } from './enemy'
 import { Ninja } from './ninja'
 import { Weapon } from './weapon'
 
-const enemyImage: string = 'images/ninja.png'
+const demonImage: string = 'images/demon.png'
+const dragonImage: string = 'images/dragon.png'
+const monkImage: string = 'images/monk.png'
 const ninjaID1: number = 1
 const ninjaID2: number = 2
 const ninjaColor1: number = 0xff0000
 const ninjaColor2: number = 0x0000ff
-const shuriken1Image: string = 'images/shuriken-1.png'
-const shuriken2Image: string = 'images/shuriken-2.png'
+const shurikenImage: string = 'images/shuriken.png'
 const weaponRotationAmount: number = 0.3
 
 export class Game {
@@ -59,9 +60,10 @@ export class Game {
 
   private loadResources(): void {
     this.app.loader
-      .add(shuriken1Image)
-      .add(shuriken2Image)
-      .add(enemyImage)
+      .add(dragonImage)
+      .add(demonImage)
+      .add(monkImage)
+      .add(shurikenImage)
       .load(this.startGameEngine.bind(this))
   }
 
@@ -85,13 +87,19 @@ export class Game {
   }
 
   private setupBoard(): void {
-    this.board = new Board(PIXI.utils.TextureCache[enemyImage], this.app.screen.height, this.app.screen.width, this)
+    this.board = new Board(
+      PIXI.utils.TextureCache[demonImage],
+      PIXI.utils.TextureCache[dragonImage],
+      PIXI.utils.TextureCache[monkImage],
+      this.app.screen.height,
+      this.app.screen.width
+    )
     this.app.stage.addChild(this.board.enemiesContainer)
   }
 
   private setupNinjas(): void {
-    this.ninja1 = new Ninja(PIXI.utils.TextureCache[shuriken1Image], ninjaID1, ninjaColor1)
-    this.ninja2 = new Ninja(PIXI.utils.TextureCache[shuriken2Image], ninjaID2, ninjaColor2)
+    this.ninja1 = new Ninja(PIXI.utils.TextureCache[shurikenImage], ninjaID1, ninjaColor1)
+    this.ninja2 = new Ninja(PIXI.utils.TextureCache[shurikenImage], ninjaID2, ninjaColor2)
     this.actualNinja = this.ninja1
   }
 
