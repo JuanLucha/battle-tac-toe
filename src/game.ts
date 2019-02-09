@@ -68,7 +68,9 @@ export class Game {
     let playerWinMessagePosition: Point = this.centerSprite(this.playerWinMessage, this.app)
     this.playerWinMessage.position.set(playerWinMessagePosition.x, playerWinMessagePosition.y)
 
-    let winnerBackground: PIXI.Sprite = new PIXI.Sprite()
+    let winnerBackground: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.WHITE)
+    winnerBackground.height = this.app.screen.height
+    winnerBackground.width = this.app.screen.width
     winnerBackground.tint = winnerBackgroundColor
     winnerBackground.alpha = winnerBackgroundAlpha
 
