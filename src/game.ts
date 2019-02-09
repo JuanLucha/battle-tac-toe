@@ -18,13 +18,14 @@ export class Game {
   private ninja2: Ninja
   private playerWinMessage: PIXI.Sprite
   private weaponHitSubscription: Subscription
+  private winnerBackground: PIXI.Sprite
+
 
   constructor() { }
 
   public start(): void {
     this.createAppEngine()
     this.loadResources()
-    this.app.ticker.add(delta => this.gameLoop(delta))
   }
 
   public switchActualNinja(): void {
@@ -42,11 +43,28 @@ export class Game {
     }
   }
 
+  private cleanOldGame(): void {
+    this.app.destroy(true, true)
+    this.enemyClickedSubscription.unsubscribe()
+    this.actualNinja = null
+    this.actualWeapon = null
+    this.background = null
+    this.board = null
+    this.enemyClickedSubscription = null
+    this.grid = null
+    this.ninja1 = null
+    this.ninja2 = null
+    this.playerWinMessage = null
+    this.weaponHitSubscription = null
+    this.winnerBackground = null
+  }
+
   private createAppEngine(): void {
     let height: number = window.innerHeight
     let width: number = window.innerWidth
 
     this.app = new PIXI.Application({ height: height, width: width })
+    this.app.ticker.add(delta => this.gameLoop(delta))
     document.body.appendChild(this.app.view)
   }
 
@@ -67,14 +85,23 @@ export class Game {
     this.playerWinMessage = new PIXI.Sprite(PIXI.utils.TextureCache[winnerImage])
     let playerWinMessagePosition: Point = this.centerSprite(this.playerWinMessage, this.app)
     this.playerWinMessage.position.set(playerWinMessagePosition.x, playerWinMessagePosition.y)
+    this.playerWinMessage
 
-    let winnerBackground: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.WHITE)
-    winnerBackground.height = this.app.screen.height
-    winnerBackground.width = this.app.screen.width
-    winnerBackground.tint = winnerBackgroundColor
-    winnerBackground.alpha = winnerBackgroundAlpha
+    this.winnerBackground = new PIXI.Sprite(PIXI.Texture.WHITE)
+    this.winnerBackground.height = this.app.screen.height
+    this.winnerBackground.width = this.app.screen.width
+    this.winnerBackground.tint = winnerBackgroundColor
+    this.winnerBackground.alpha = winnerBackgroundAlpha
+    this.winnerBackground.interactive = true
+    this.winnerBackground.on('click', (e: MouseEvent) => {
+      e.stopPropagation()
+      this.cleanOldGame()
+      this.createAppEngine()
+      this.loadResources()
+      this.startGameEngine()
+    })
 
-    this.app.stage.addChild(winnerBackground, this.playerWinMessage)
+    this.app.stage.addChild(this.winnerBackground, this.playerWinMessage)
   }
 
   private loadResources(): void {
@@ -109,6 +136,7 @@ export class Game {
       this.actualNinja.attack(this.app.screen.width / 2, this.app.screen.height, enemy, this.actualWeapon)
     })
   }
+
   private setupBackground(): void {
     this.background = new PIXI.Sprite(PIXI.utils.TextureCache[backgroundImage])
     let backgroundPosition: Point = this.centerSprite(this.background, this.app)
@@ -129,6 +157,7 @@ export class Game {
       this.app.screen.height,
       this.app.screen.width
     )
+
     this.app.stage.addChild(this.board.enemiesContainer)
   }
 
