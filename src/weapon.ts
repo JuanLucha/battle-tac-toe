@@ -2,9 +2,6 @@ import { Subject } from 'rxjs'
 import { Enemy } from './enemy'
 import * as PIXI from 'pixi.js'
 
-const stepSize: number = 30
-const weaponSize: number = 0.5
-
 export class Weapon {
   public onEnemyHit: Subject<boolean> = new Subject()
   public hitTexture: PIXI.Texture
@@ -47,7 +44,7 @@ export class Weapon {
       }
     } else {
       this.sprite.texture = this.hitTexture
-      this.sprite.rotation = 4.5
+      this.sprite.rotation = hitRotation
       this.onEnemyHit.next(true)
     }
   }
@@ -78,3 +75,8 @@ export class Weapon {
     return this.sprite.y > this.target.sprite.y + this.target.sprite.parent.y + this.target.sprite.height / 2
   }
 }
+
+// Constants
+const hitRotation: number = 4.5
+const stepSize: number = 30
+const weaponSize: number = 0.5

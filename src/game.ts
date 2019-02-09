@@ -12,10 +12,11 @@ export class Game {
   private app: PIXI.Application
   private background: PIXI.Sprite
   private board: Board
+  private enemyClickedSubscription: Subscription
   private grid: PIXI.Sprite
   private ninja1: Ninja
   private ninja2: Ninja
-  private enemyClickedSubscription: Subscription
+  private playerWinMessage: PIXI.Sprite
   private weaponHitSubscription: Subscription
 
   constructor() { }
@@ -56,6 +57,24 @@ export class Game {
     }
   }
 
+  private gameOver(): void {
+    let winnerImage: string
+    if (this.actualNinja.playerId === ninjaID1) {
+      winnerImage = player1WinImage
+    } else {
+      winnerImage = player2WinImage
+    }
+    this.playerWinMessage = new PIXI.Sprite(PIXI.utils.TextureCache[winnerImage])
+    let playerWinMessagePosition: Point = this.centerSprite(this.playerWinMessage, this.app)
+    this.playerWinMessage.position.set(playerWinMessagePosition.x, playerWinMessagePosition.y)
+
+    let winnerBackground: PIXI.Sprite = new PIXI.Sprite()
+    winnerBackground.tint = winnerBackgroundColor
+    winnerBackground.alpha = winnerBackgroundAlpha
+
+    this.app.stage.addChild(winnerBackground, this.playerWinMessage)
+  }
+
   private loadResources(): void {
     this.app.loader
       .add(backgroundImage)
@@ -64,6 +83,8 @@ export class Game {
       .add(gridImage)
       .add(hitImage)
       .add(monkImage)
+      .add(player1WinImage)
+      .add(player2WinImage)
       .add(shurikenImage)
       .load(this.startGameEngine.bind(this))
   }
@@ -73,11 +94,11 @@ export class Game {
       this.actualWeapon = this.actualNinja.weapon.clone()
       if (this.weaponHitSubscription) this.weaponHitSubscription.unsubscribe()
       this.weaponHitSubscription = this.actualWeapon.onEnemyHit.subscribe(() => {
+        this.board.markTile(parseInt(enemy.sprite.name), this.actualNinja.playerId)
         enemy.elimitate()
         this.actualWeapon.target = null
         if (this.board.detectNinjaWinner(this.actualNinja)) {
-          console.log("gameOver")
-          // this.showGameOver()
+          this.gameOver()
         } else {
           this.switchActualNinja()
         }
@@ -131,9 +152,13 @@ const gridImage: string = 'images/grid.png'
 const gridOffsetY: number = 20
 const hitImage: string = 'images/hit.png'
 const monkImage: string = 'images/monk.png'
+const player1WinImage: string = 'images/1p-win.png'
+const player2WinImage: string = 'images/2p-win.png'
 const ninjaID1: number = 1
 const ninjaID2: number = 2
 const ninjaColor1: number = 0xff0000
 const ninjaColor2: number = 0x0000ff
 const shurikenImage: string = 'images/shuriken.png'
 const weaponRotationAmount: number = 0.3
+const winnerBackgroundAlpha: number = 0.4
+const winnerBackgroundColor: number = 0xaa5555
