@@ -4,23 +4,15 @@ import { Board } from './board'
 import { Enemy } from './enemy'
 import { Ninja } from './ninja'
 import { Weapon } from './weapon'
-
-const demonImage: string = 'images/demon.png'
-const dragonImage: string = 'images/dragon.png'
-const monkImage: string = 'images/monk.png'
-const ninjaID1: number = 1
-const ninjaID2: number = 2
-const ninjaColor1: number = 0xff0000
-const ninjaColor2: number = 0x0000ff
-const shurikenImage: string = 'images/shuriken.png'
-const weaponRotationAmount: number = 0.3
+import { Point } from './shared/point.interface'
 
 export class Game {
-  public actualNinja: Ninja
-  public actualWeapon: Weapon
-  public app: PIXI.Application
-
+  private actualNinja: Ninja
+  private actualWeapon: Weapon
+  private app: PIXI.Application
+  private background: PIXI.Sprite
   private board: Board
+  private grid: PIXI.Sprite
   private ninja1: Ninja
   private ninja2: Ninja
   private enemyClickedSubscription: Subscription
@@ -40,7 +32,13 @@ export class Game {
     } else {
       this.actualNinja = this.ninja1
     }
-    console.log(this.actualNinja.playerId)
+  }
+
+  private centerSprite(sprite: PIXI.Sprite, app: PIXI.Application): Point {
+    return {
+      x: app.screen.width / 2 - sprite.width / 2,
+      y: app.screen.height / 2 - sprite.height / 2,
+    }
   }
 
   private createAppEngine(): void {
@@ -60,8 +58,11 @@ export class Game {
 
   private loadResources(): void {
     this.app.loader
+      .add(backgroundImage)
       .add(dragonImage)
       .add(demonImage)
+      .add(gridImage)
+      .add(hitImage)
       .add(monkImage)
       .add(shurikenImage)
       .load(this.startGameEngine.bind(this))
@@ -85,6 +86,17 @@ export class Game {
       this.actualNinja.attack(this.app.screen.width / 2, this.app.screen.height, enemy, this.actualWeapon)
     })
   }
+  private setupBackground(): void {
+    this.background = new PIXI.Sprite(PIXI.utils.TextureCache[backgroundImage])
+    let backgroundPosition: Point = this.centerSprite(this.background, this.app)
+    this.background.position.set(backgroundPosition.x, backgroundPosition.y)
+    this.app.stage.addChild(this.background)
+
+    this.grid = new PIXI.Sprite(PIXI.utils.TextureCache[gridImage])
+    let gridPosition: Point = this.centerSprite(this.grid, this.app)
+    this.grid.position.set(gridPosition.x, gridPosition.y)
+    this.app.stage.addChild(this.grid)
+  }
 
   private setupBoard(): void {
     this.board = new Board(
@@ -104,12 +116,23 @@ export class Game {
   }
 
   private startGameEngine(): void {
+    this.setupBackground()
     this.setupNinjas()
     this.setupBoard()
     this.setSubscriptions()
-
-    // this.actualWeapon = this.ninja1.weapon.clone()
-    // this.actualWeapon.rotate(weaponRotationAmount)
-    // this.app.stage.addChild(this.actualWeapon.sprite)
   }
 }
+
+// Constants
+const backgroundImage: string = 'images/background.png'
+const demonImage: string = 'images/demon.png'
+const dragonImage: string = 'images/dragon.png'
+const gridImage: string = 'images/grid.png'
+const hitImage: string = 'images/hit.png'
+const monkImage: string = 'images/monk.png'
+const ninjaID1: number = 1
+const ninjaID2: number = 2
+const ninjaColor1: number = 0xff0000
+const ninjaColor2: number = 0x0000ff
+const shurikenImage: string = 'images/shuriken.png'
+const weaponRotationAmount: number = 0.3
