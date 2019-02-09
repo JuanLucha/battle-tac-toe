@@ -12,7 +12,7 @@ export class Enemy {
     this.sprite.name = this.id.toString()
   }
 
-  public setColor(newColor: number): void {
-    this.sprite.tint = newColor
+  public elimitate(): void {
+    this.sprite.visible = false
   }
 }

@@ -73,7 +73,7 @@ export class Game {
       this.actualWeapon = this.actualNinja.weapon.clone()
       if (this.weaponHitSubscription) this.weaponHitSubscription.unsubscribe()
       this.weaponHitSubscription = this.actualWeapon.onEnemyHit.subscribe(() => {
-        enemy.setColor(this.actualNinja.playerColor)
+        enemy.elimitate()
         this.actualWeapon.target = null
         if (this.board.detectNinjaWinner(this.actualNinja)) {
           console.log("gameOver")
@@ -94,7 +94,7 @@ export class Game {
 
     this.grid = new PIXI.Sprite(PIXI.utils.TextureCache[gridImage])
     let gridPosition: Point = this.centerSprite(this.grid, this.app)
-    this.grid.position.set(gridPosition.x, gridPosition.y)
+    this.grid.position.set(gridPosition.x, gridPosition.y - gridOffsetY)
     this.app.stage.addChild(this.grid)
   }
 
@@ -128,6 +128,7 @@ const backgroundImage: string = 'images/background.png'
 const demonImage: string = 'images/demon.png'
 const dragonImage: string = 'images/dragon.png'
 const gridImage: string = 'images/grid.png'
+const gridOffsetY: number = 20
 const hitImage: string = 'images/hit.png'
 const monkImage: string = 'images/monk.png'
 const ninjaID1: number = 1
