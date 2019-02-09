@@ -5,6 +5,7 @@ import { Enemy } from './enemy'
 import { Ninja } from './ninja'
 import { Weapon } from './weapon'
 import { Point } from './shared/point.interface'
+import { Howl } from 'howler'
 
 export class Game {
   private actualNinja: Ninja
@@ -18,6 +19,7 @@ export class Game {
   private ninja2: Ninja
   private playerWinMessage: PIXI.Sprite
   private titleScreen: PIXI.Sprite
+  private titleScreenSong: Howl
   private weaponHitSubscription: Subscription
   private winnerBackground: PIXI.Sprite
 
@@ -57,6 +59,8 @@ export class Game {
     this.playerWinMessage = null
     this.weaponHitSubscription = null
     this.winnerBackground = null
+    this.titleScreenSong.stop()
+    this.titleScreenSong = null
   }
 
   private createAppEngine(): void {
@@ -161,6 +165,12 @@ export class Game {
     this.app.stage.addChild(this.board.enemiesContainer)
   }
 
+  private setupMusic(): void {
+    this.titleScreenSong = new Howl({
+      src: ['music/title.wav'],
+      loop: true,
+    })
+  }
   private setupNinjas(): void {
     this.ninja1 = new Ninja(PIXI.utils.TextureCache[shurikenImage], PIXI.utils.TextureCache[hitImage], ninjaID1, ninjaColor1)
     this.ninja2 = new Ninja(PIXI.utils.TextureCache[shurikenImage], PIXI.utils.TextureCache[hitImage], ninjaID2, ninjaColor2)
@@ -178,6 +188,7 @@ export class Game {
     })
 
     this.app.stage.addChild(this.titleScreen)
+    this.titleScreenSong.play()
   }
 
   private showGame(): void {
@@ -189,6 +200,7 @@ export class Game {
     this.setupNinjas()
     this.setupBoard()
     this.setSubscriptions()
+    this.setupMusic()
     this.setupTitleScreen()
   }
 }
