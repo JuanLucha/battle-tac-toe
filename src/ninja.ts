@@ -8,11 +8,11 @@ export class Ninja {
   public score: number
   public weapon: Weapon
 
-  constructor(weaponTexture: PIXI.Texture, playerId: number, playerColor: number) {
+  constructor(weaponTexture: PIXI.Texture, hitTexture: PIXI.Texture, playerId: number, playerColor: number) {
     this.playerColor = playerColor
     this.playerId = playerId
     this.score = 0
-    this.weapon = new Weapon(weaponTexture, playerId)
+    this.weapon = new Weapon(weaponTexture, hitTexture, playerId, playerColor)
   }
 
   public attack(startPositionX: number, startPositionY: number, enemy: Enemy, weapon: Weapon): void {

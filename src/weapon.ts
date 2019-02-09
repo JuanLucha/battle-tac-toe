@@ -3,31 +3,35 @@ import { Enemy } from './enemy'
 import * as PIXI from 'pixi.js'
 
 const stepSize: number = 30
+const weaponSize: number = 0.5
 
 export class Weapon {
   public onEnemyHit: Subject<boolean> = new Subject()
+  public hitTexture: PIXI.Texture
   public playerId: number
   public rotation: number = 0
   public sprite: PIXI.Sprite
   public target: Enemy
   public texture: PIXI.Texture
 
-  constructor(texture: PIXI.Texture, playerId: number, rotation: number = 0) {
+  constructor(texture: PIXI.Texture, hitTexture: PIXI.Texture, playerId: number, playerColor: number, rotation: number = 0) {
     this.playerId = playerId
     this.rotation = rotation
     this.texture = texture
+    this.hitTexture = hitTexture
     this.sprite = new PIXI.Sprite(this.texture)
+    this.sprite.tint = playerColor
     this.sprite.anchor.set(0.5)
     this.sprite.position.set(400, 400)
-    this.sprite.scale.set(0.1, 0.1)
+    this.sprite.scale.set(weaponSize, weaponSize)
   }
 
   public clone(): Weapon {
-    return new Weapon(this.texture.clone(), this.playerId, this.rotation)
+    return new Weapon(this.texture.clone(), this.hitTexture.clone(), this.playerId, this.sprite.tint, this.rotation)
   }
 
   public moveToTarget(): void {
-    if (this.sprite.scale.x > 0.1) {
+    if (this.sprite.scale.x > weaponSize) {
       this.sprite.scale.x -= 0.1
       this.sprite.scale.y -= 0.1
 
@@ -42,6 +46,8 @@ export class Weapon {
         this.sprite.y += stepSize
       }
     } else {
+      this.sprite.texture = this.hitTexture
+      this.sprite.rotation = 4.5
       this.onEnemyHit.next(true)
     }
   }

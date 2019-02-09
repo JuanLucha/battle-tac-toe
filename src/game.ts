@@ -110,8 +110,8 @@ export class Game {
   }
 
   private setupNinjas(): void {
-    this.ninja1 = new Ninja(PIXI.utils.TextureCache[shurikenImage], ninjaID1, ninjaColor1)
-    this.ninja2 = new Ninja(PIXI.utils.TextureCache[shurikenImage], ninjaID2, ninjaColor2)
+    this.ninja1 = new Ninja(PIXI.utils.TextureCache[shurikenImage], PIXI.utils.TextureCache[hitImage], ninjaID1, ninjaColor1)
+    this.ninja2 = new Ninja(PIXI.utils.TextureCache[shurikenImage], PIXI.utils.TextureCache[hitImage], ninjaID2, ninjaColor2)
     this.actualNinja = this.ninja1
   }
 
