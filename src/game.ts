@@ -125,6 +125,8 @@ export class Game {
 
   private setSubscriptions(): void {
     this.enemyClickedSubscription = this.board.enemyClicked.subscribe((enemy: Enemy) => {
+      if (this.actualWeapon && this.actualWeapon.target) return
+
       this.actualWeapon = this.actualNinja.weapon.clone()
       if (this.weaponHitSubscription) this.weaponHitSubscription.unsubscribe()
       this.weaponHitSubscription = this.actualWeapon.onEnemyHit.subscribe(() => {
