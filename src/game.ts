@@ -17,9 +17,9 @@ export class Game {
   private ninja1: Ninja
   private ninja2: Ninja
   private playerWinMessage: PIXI.Sprite
+  private titleScreen: PIXI.Sprite
   private weaponHitSubscription: Subscription
   private winnerBackground: PIXI.Sprite
-
 
   constructor() { }
 
@@ -98,7 +98,6 @@ export class Game {
       this.cleanOldGame()
       this.createAppEngine()
       this.loadResources()
-      this.startGameEngine()
     })
 
     this.app.stage.addChild(this.winnerBackground, this.playerWinMessage)
@@ -114,6 +113,7 @@ export class Game {
       .add(monkImage)
       .add(player1WinImage)
       .add(player2WinImage)
+      .add(titleScreenImage)
       .add(shurikenImage)
       .load(this.startGameEngine.bind(this))
   }
@@ -167,11 +167,29 @@ export class Game {
     this.actualNinja = this.ninja1
   }
 
+  private setupTitleScreen(): void {
+    this.titleScreen = new PIXI.Sprite(PIXI.utils.TextureCache[titleScreenImage])
+    this.titleScreen.height = this.app.screen.height
+    this.titleScreen.width = this.app.screen.width
+    this.titleScreen.interactive = true
+    this.titleScreen.on('click', (e: MouseEvent) => {
+      e.stopPropagation()
+      this.showGame()
+    })
+
+    this.app.stage.addChild(this.titleScreen)
+  }
+
+  private showGame(): void {
+    this.titleScreen.visible = false
+  }
+
   private startGameEngine(): void {
     this.setupBackground()
     this.setupNinjas()
     this.setupBoard()
     this.setSubscriptions()
+    this.setupTitleScreen()
   }
 }
 
@@ -189,6 +207,7 @@ const ninjaID1: number = 1
 const ninjaID2: number = 2
 const ninjaColor1: number = 0xff0000
 const ninjaColor2: number = 0x0000ff
+const titleScreenImage: string = 'images/title.png'
 const shurikenImage: string = 'images/shuriken.png'
 const weaponRotationAmount: number = 0.3
 const winnerBackgroundAlpha: number = 0.4
