@@ -1,7 +1,7 @@
 {
-  "name": "ninja-tac-toe",
+  "name": "battle-tac-toe",
   "version": "1.0.0",
-  "description": "A ninja version of Tic Tac Toe",
+  "description": "A battle version of Tic Tac Toe",
   "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server --port 9000 --inline --progress --profile --colors --watch --content-base src/ --mode development",
@@ -14,7 +14,9 @@
     "tictactoe",
     "typescript",
     "ninja",
-    "pixijs"
+    "pixijs",
+    "howler",
+    "pixel-art"
   ],
   "author": "Juan Lucha",
   "devDependencies": {
