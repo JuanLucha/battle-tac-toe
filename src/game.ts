@@ -18,6 +18,7 @@ export class Game {
   private ninja1: Ninja
   private ninja2: Ninja
   private playerWinMessage: PIXI.Sprite
+  private shurikenSound: Howl
   private titleScreen: PIXI.Sprite
   private titleScreenSong: Howl
   private weaponHitSubscription: Subscription
@@ -138,6 +139,7 @@ export class Game {
       })
       this.app.stage.addChild(this.actualWeapon.sprite)
       this.actualNinja.attack(this.app.screen.width / 2, this.app.screen.height, enemy, this.actualWeapon)
+      this.shurikenSound.play()
     })
   }
 
@@ -154,10 +156,23 @@ export class Game {
   }
 
   private setupBoard(): void {
+    let demonDeathSound: Howl = new Howl({
+      src: ['sound/demon-death.wav'],
+    })
+    let monkDeathSound: Howl = new Howl({
+      src: ['sound/monk-death.wav'],
+    })
+    let dragonDeathSound: Howl = new Howl({
+      src: ['sound/dragon-death.wav'],
+    })
+
     this.board = new Board(
       PIXI.utils.TextureCache[demonImage],
       PIXI.utils.TextureCache[dragonImage],
       PIXI.utils.TextureCache[monkImage],
+      demonDeathSound,
+      monkDeathSound,
+      dragonDeathSound,
       this.app.screen.height,
       this.app.screen.width
     )
@@ -165,10 +180,14 @@ export class Game {
     this.app.stage.addChild(this.board.enemiesContainer)
   }
 
-  private setupMusic(): void {
+  private setupSound(): void {
     this.titleScreenSong = new Howl({
-      src: ['music/title.wav'],
+      src: ['sound/title.wav'],
       loop: true,
+    })
+
+    this.shurikenSound = new Howl({
+      src: ['sound/shuriken.mp3'],
     })
   }
   private setupNinjas(): void {
@@ -200,7 +219,7 @@ export class Game {
     this.setupNinjas()
     this.setupBoard()
     this.setSubscriptions()
-    this.setupMusic()
+    this.setupSound()
     this.setupTitleScreen()
   }
 }

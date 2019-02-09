@@ -12,17 +12,26 @@ export class Board {
   private demonTexture: PIXI.Texture
   private dragonTexture: PIXI.Texture
   private monkTexture: PIXI.Texture
+  private demonDeathSound: Howl
+  private monkDeathSound: Howl
+  private dragonDeathSound: Howl
 
   constructor(
     demonTexture: PIXI.Texture,
     dragonTexture: PIXI.Texture,
     monkTexture: PIXI.Texture,
+    demonDeathSound: Howl,
+    monkDeathSound: Howl,
+    dragonDeathSound: Howl,
     screenHeight: number,
     screenWidth: number
   ) {
     this.demonTexture = demonTexture
     this.dragonTexture = dragonTexture
     this.monkTexture = monkTexture
+    this.demonDeathSound = demonDeathSound
+    this.monkDeathSound = monkDeathSound
+    this.dragonDeathSound = dragonDeathSound
     this.initBoard(screenHeight, screenWidth)
   }
 
@@ -75,7 +84,19 @@ export class Board {
 
     let y: number = Math.floor(enemyIndex / 3)
 
-    return {x: x * enemiesContainerWidth / boardWidth, y: y * enemiesContainerHeight / boardHeight}
+    return { x: x * enemiesContainerWidth / boardWidth, y: y * enemiesContainerHeight / boardHeight }
+  }
+
+  private getEnemySound(enemyId: number): Howl {
+    if ([0, 2, 6, 8].includes(enemyId)) {
+      return this.demonDeathSound
+    }
+    if ([1, 3, 5, 7].includes(enemyId)) {
+      return this.monkDeathSound
+    }
+    if (enemyId === 4) {
+      return this.dragonDeathSound
+    }
   }
 
   private getEnemyTexture(enemyId: number): PIXI.Texture {
@@ -99,7 +120,7 @@ export class Board {
     const enemyWidth: number = enemiesContainerWidth / boardWidth
 
     for (let enemyIndex = 0; enemyIndex < boardWidth * boardHeight; enemyIndex++) {
-      let newEnemy: Enemy = new Enemy(this.getEnemyTexture(enemyIndex), aliveState, enemyIndex)
+      let newEnemy: Enemy = new Enemy(this.getEnemyTexture(enemyIndex), this.getEnemySound(enemyIndex), aliveState, enemyIndex)
       newEnemy.sprite.name = enemyIndex.toString()
       newEnemy.sprite.buttonMode = true
       newEnemy.sprite.interactive = true
